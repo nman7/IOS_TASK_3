@@ -77,10 +77,10 @@ struct MapTabView: View {
                         HStack(spacing: 8) {
                             ForEach(allPhotos.indices, id: \.self) { index in
                                 if let url = photoURL(allPhotos[index].photo_reference) {
-                                    let _ = {
-                                        print("photo URL: \(url)")
-                                        return 0
-                                    }()
+//                                    let _ = {
+//                                        print("photo URL: \(url)")
+//                                        return 0
+//                                    }()
                                     AsyncImage(url: url) { phase in
                                         switch phase {
                                         case .success(let image):

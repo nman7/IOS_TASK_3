@@ -67,6 +67,10 @@ struct GooglePlacesResponse: Codable {
     let results: [GooglePlace]
 }
 
+struct CachedGooglePlacesResponse: Codable {
+    let results: [GooglePlace]
+}
+
 struct GooglePlaceDetailsResponse: Codable {
     let result: GooglePlaceDetails
 }
@@ -107,10 +111,10 @@ struct RecommendationView: View {
                 .padding()
 
                 if selectedTab == "Map" {
-                    let _ = {
-                        print("selectedPlace: \(selectedPlace)")
-                        return 0
-                    }()
+//                    let _ = {
+//                        print("selectedPlace: \(selectedPlace)")
+//                        return 0
+//                    }()
                     
                     MapTabView(
                         region: $region,
@@ -134,7 +138,7 @@ struct RecommendationView: View {
             }
             .navigationTitle(searchKeyword)
             .onAppear {
-                let status = CLLocationManager.authorizationStatus()
+                let status = CLLocationManager().authorizationStatus
                 if status == .authorizedWhenInUse || status == .authorizedAlways {
                     if let newRegion = locationManager.region {
                         self.region = newRegion
@@ -151,7 +155,7 @@ struct RecommendationView: View {
 //                    searchPlaces()
 //                }
             }
-            .onChange(of: selectedTab) { newTab in
+            .onChange(of: selectedTab) { (oldTab, newTab) in
                 if (newTab == "Map") {
                     if (selectedPlace == nil) {
                         selectedPlace = places.first
@@ -160,7 +164,7 @@ struct RecommendationView: View {
                     selectedPlace = nil
                 }
             }
-            .onChange(of: selectedPlace) { newPlace in
+            .onChange(of: selectedPlace) { (oldPlace, newPlace) in
                 if let place = newPlace {
                     region.center = CLLocationCoordinate2D(
                         latitude: place.geometry.location.lat,
@@ -169,13 +173,10 @@ struct RecommendationView: View {
                     fetchPlaceDetails(for: place)
                 }
             }
-            .onChange(of: locationManager.hasUpdatedRegion) { updated in
-                print("UPDATE LOCATION!")
-                let status = CLLocationManager.authorizationStatus()
-                print("auth?   \(status)")
+            .onChange(of: locationManager.hasUpdatedRegion) { (before, updated) in
+                let status = CLLocationManager().authorizationStatus
                 if updated && (status == .authorizedWhenInUse || status == .authorizedAlways) {
                     if let newRegion = locationManager.region {
-                        print("new Region!! \(newRegion)")
                         self.region = newRegion
                         self.searchText = self.searchKeyword
                         searchPlaces()
@@ -188,24 +189,36 @@ struct RecommendationView: View {
     }
 
     func searchPlaces() {
-        print("searchPlaces: \(searchText)")
         let query = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let location = "-33.88388762908775, 151.1992306199193" // Default: UTS, Sydney
         let radius = 5000
         let urlStr = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=\(query)&location=\(location)&radius=\(radius)&key=\(apiKey)"
         
-        print("urlStr: \(urlStr)")
+        
+        let cacheKey = "placesCache_\(urlStr)"
+        if let cachedData = UserDefaults.standard.data(forKey: cacheKey),
+           let cachedResult = try? JSONDecoder().decode(CachedGooglePlacesResponse.self, from: cachedData) {
+            print("✅ Loaded from cache")
+            DispatchQueue.main.async {
+                self.places = cachedResult.results
+            }
+            return
+        }
+
         guard let url = URL(string: urlStr) else { return }
 
         URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data else { return }
             do {
                 let result = try JSONDecoder().decode(GooglePlacesResponse.self, from: data)
-                print("result: \(result)")
                 DispatchQueue.main.async {
                     self.places = result.results
+
+                    let cacheResult = CachedGooglePlacesResponse(results: result.results)
+                    if let encoded = try? JSONEncoder().encode(cacheResult) {
+                        UserDefaults.standard.set(encoded, forKey: cacheKey)
+                    }
                 }
-                print("RESULT: \(result.results)")
             } catch {
                 print("❌ JSON decode failed:", error)
             }
@@ -217,6 +230,18 @@ struct RecommendationView: View {
     }
 
     func fetchPlaceDetails(for place: GooglePlace) {
+        let cacheKey = "placeDetailsCache_\(place.name)"
+        if let cachedData = UserDefaults.standard.data(forKey: cacheKey),
+           let cachedResult = try? JSONDecoder().decode(GooglePlaceDetailsResponse.self, from: cachedData) {
+            print("✅ Loaded from cache")
+            DispatchQueue.main.async {
+                let photos = (place.photos ?? []) + (cachedResult.result.photos ?? [])
+                detailedPhotos = photos
+                self.selectedPhoneNumber = cachedResult.result.formatted_phone_number
+            }
+            return
+        }
+
         let baseQuery = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let placeName = place.name.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
         let urlStr = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=\(placeName)&inputtype=textquery&fields=place_id&key=\(apiKey)"
@@ -242,6 +267,11 @@ struct RecommendationView: View {
                             DispatchQueue.main.async {
                                 detailedPhotos = photos
                                 self.selectedPhoneNumber = result.result.formatted_phone_number
+
+                                let fullDetails = GooglePlaceDetailsResponse(result: result.result)
+                                if let encoded = try? JSONEncoder().encode(fullDetails) {
+                                    UserDefaults.standard.set(encoded, forKey: cacheKey)
+                                }
                             }
                         } catch {
                             print("❌ Failed to decode place details:", error)
