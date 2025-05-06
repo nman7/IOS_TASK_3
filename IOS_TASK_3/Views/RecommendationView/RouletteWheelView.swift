@@ -10,45 +10,61 @@ struct RouletteWheelView: View {
 
     var body: some View {
         ZStack {
-            // Draw the outer circle with a colorful border
-            Circle()
-                .strokeBorder(
-                    AngularGradient(
-                        gradient: Gradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .pink]),
-                        center: .center
-                    ),
-                    lineWidth: 40
-                )
-                .frame(width: wheelSize, height: wheelSize)
-
-            // Place each category label around the wheel
-            ForEach(categories.indices, id: \.self) { index in
-                let rawAngle = Double(index) / Double(categories.count) * 360
-                let angle = Angle(degrees: rawAngle - 90) // Adjust to start from the top
-
-                Text(categories[index])
-                    .font(.system(size: 11))
-                    .foregroundColor(.black)
-                    .rotationEffect(angle)
-                    .offset(
-                        x: wheelSize / 2 * CGFloat(cos(angle.radians)),
-                        y: wheelSize / 2 * CGFloat(sin(angle.radians))
-                    )
+            // Fixed top needle
+            VStack {
+                Image(systemName: "arrowtriangle.down.fill")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(.blue)
+                    .padding(.bottom, 6)
+                Spacer()
             }
 
-            // The pointer that indicates the selected category
-            Image(systemName: "arrowtriangle.down.fill")
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundColor(.red)
-                .offset(y: -wheelSize / 2 - 12)
-                .rotationEffect(.degrees(rotation))
-                .animation(.easeOut(duration: 3), value: rotation)
-                .onTapGesture {
-                    spinNeedle()
+            // The rotating wheel
+            ZStack {
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: wheelSize + 40, height: wheelSize + 40)
+                    .shadow(color: .gray.opacity(0.3), radius: 6, x: 0, y: 3)
+
+                Circle()
+                    .strokeBorder(
+                        AngularGradient(
+                            gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.cyan, Color.mint, Color.blue.opacity(0.7)]),
+                            center: .center
+                        ),
+                        lineWidth: 36
+                    )
+                    .frame(width: wheelSize, height: wheelSize)
+
+                // Category labels around the circle
+                ForEach(categories.indices, id: \.self) { index in
+                    let rawAngle = Double(index) / Double(categories.count) * 360
+                    let angle = Angle(degrees: rawAngle - 90)
+
+                    Text(categories[index])
+                        .font(.caption2)
+                        .foregroundColor(.primary)
+                        .rotationEffect(angle)
+                        .offset(
+                            x: wheelSize / 2 * CGFloat(cos(angle.radians)),
+                            y: wheelSize / 2 * CGFloat(sin(angle.radians))
+                        )
                 }
+
+                // Optional center decoration
+                Circle()
+                    .fill(Color.white)
+                    .frame(width: 24, height: 24)
+                    .shadow(radius: 2)
+            }
+            .rotationEffect(.degrees(rotation))
+            .animation(.easeOut(duration: 3), value: rotation)
+            .onTapGesture {
+                spinNeedle()
+            }
         }
-        .frame(width: wheelSize + 80, height: wheelSize + 80)
+        .frame(width: wheelSize + 80, height: wheelSize + 100)
     }
 
     private func spinNeedle() {
@@ -57,7 +73,6 @@ struct RouletteWheelView: View {
 
         let angleMap = createAngleMap(for: categories)
 
-        // Spin the needle randomly for a few full rotations
         let fullSpins = Double.random(in: 3...6) * 360
         let extraAngle = Double.random(in: 0..<360)
         let totalRotation = fullSpins + extraAngle
@@ -66,33 +81,36 @@ struct RouletteWheelView: View {
             rotation += totalRotation
         }
 
-        // Wait for the spin animation to finish before determining the result
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
+            // Normalize the final rotation to [0, 360)
             let finalNeedleAngle = rotation.truncatingRemainder(dividingBy: 360)
-            let adjustedAngle = (360 - finalNeedleAngle).truncatingRemainder(dividingBy: 360)
+            // Adjust to find the angle at the top (0 degrees, where the pin is)
+            let angleAtPin = (360 - finalNeedleAngle).truncatingRemainder(dividingBy: 360)
 
-            let result = closestCategory(to: finalNeedleAngle, using: angleMap)
+            let result = closestCategory(to: angleAtPin, using: angleMap)
             onResult(result)
             isSpinning = false
         }
     }
 
-    // Create a dictionary mapping each category to its corresponding angle
     private func createAngleMap(for categories: [String]) -> [Double: String] {
         let anglePerCategory = 360.0 / Double(categories.count)
         var angleMap: [Double: String] = [:]
 
         for (index, category) in categories.enumerated() {
-            let angle = Double(index) * anglePerCategory
+            // Map angles so category at angle 0° is at the top (aligned with pin)
+            let angle = (Double(index) * anglePerCategory).truncatingRemainder(dividingBy: 360)
             angleMap[angle] = category
         }
 
         return angleMap
     }
 
-    // Find the category whose angle is closest to the needle's final angle
     private func closestCategory(to angle: Double, using angleMap: [Double: String]) -> String {
-        let closest = angleMap.keys.min(by: { abs($0 - angle) < abs($1 - angle) }) ?? 0
+        // Find the closest angle, considering the category spans
+        let anglePerCategory = 360.0 / Double(categories.count)
+        let adjustedAngle = (angle + anglePerCategory / 2).truncatingRemainder(dividingBy: 360)
+        let closest = angleMap.keys.min(by: { abs($0 - adjustedAngle) < abs($1 - adjustedAngle) }) ?? 0
         return angleMap[closest] ?? "Unknown"
     }
 }
