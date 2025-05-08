@@ -6,7 +6,7 @@ struct RouletteWheelView: View {
 
     @State private var rotation: Double = 0
     @State private var isSpinning = false
-    let wheelSize: CGFloat = 380
+    let wheelSize: CGFloat = 350
 
     var body: some View {
         ZStack {
