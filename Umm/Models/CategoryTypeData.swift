@@ -44,7 +44,6 @@ struct CategoryTypeData {
         "Spanish",
         "Steakhouse",
         "Street Food",
-        "Sushi Bar",
         "Taiwanese",
         "Thai",
         "Tibetan",
