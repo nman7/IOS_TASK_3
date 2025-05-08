@@ -49,8 +49,8 @@ struct BeverageSpinnerView: View {
 
                     // Wheel
                     let drinks = allowAlcohol
-                        ? CategoryData.beverageCategoriesAlcoholic + CategoryData.beverageCategoriesNonAlcoholic
-                        : CategoryData.beverageCategoriesNonAlcoholic
+                        ? CategoryTypeData.BeverageCategoriesAlcoholic + CategoryTypeData.BeverageCategoriesNonAlcoholic
+                        : CategoryTypeData.BeverageCategoriesNonAlcoholic
 
                     RouletteWheelView(categories: drinks) { result in
                         selectedDrink = result

@@ -4,6 +4,7 @@
 //
 //  Created by Josh Tsai on 2025/5/5.
 //
+
 import SwiftUI
 import CoreLocation
 import MapKit
@@ -17,7 +18,6 @@ struct ListTabView: View {
     @Binding var selectedTab: String
 
     var body: some View {
-        
         List(places.prefix(10)) { place in
             VStack(alignment: .leading, spacing: 8) {
                 if let ref = place.photos?.first?.photo_reference,
@@ -41,7 +41,7 @@ struct ListTabView: View {
                 }
                 
 //                let _ = {
-//                    print("\(place.name): \(place)") 
+//                    print("\(place.name): \(place)")
 //                    return 0
 //                }()
 
@@ -74,7 +74,7 @@ struct ListTabView: View {
                     latitude: place.geometry.location.lat,
                     longitude: place.geometry.location.lng
                 )
-//                fetchPlaceDetails(place)
+//              fetchPlaceDetails(place)
                 selectedTab = "Map"
             }
         }

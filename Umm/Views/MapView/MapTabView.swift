@@ -4,6 +4,7 @@
 //
 //  Created by Josh Tsai on 2025/5/5.
 //
+
 import SwiftUI
 import CoreLocation
 import MapKit
@@ -19,7 +20,8 @@ struct MapTabView: View {
 
     var body: some View {
         // Combine places.filter and selectedPlace into sortedPlaces
-//        let sortedPlaces = places.filter { $0.name != selectedPlace?.name } + (selectedPlace.map { [$0] } ?? [])
+        // let sortedPlaces = places.filter { $0.name != selectedPlace?.name } + (selectedPlace.map { [$0] } ?? [])
+        
         ZStack(alignment: .topTrailing) {
             Map(coordinateRegion: $region, interactionModes: [.all], annotationItems: places) { place in
                 MapAnnotation(
@@ -187,13 +189,12 @@ struct MapTabView: View {
                             latitude: place.geometry.location.lat,
                             longitude: place.geometry.location.lng
                         )
-//                        fetchPlaceDetails(place)
+//                      fetchPlaceDetails(place)
                     }
             }
         }
     }
 }
-
 
 //#Preview {
 //    MapTabView()
