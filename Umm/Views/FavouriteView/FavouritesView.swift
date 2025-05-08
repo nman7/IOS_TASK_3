@@ -1,14 +1,13 @@
 //
-//  FavouritesView.swift
+//  FavouriteView.swift
 //  IOS_TASK_3
 //
-//  Created by nauman mansuri on 06/05/25.
+//  Created by Kai-Hsuan Lin on 08/05/2025
 //
-
 
 import SwiftUI
 
-struct FavouritesView: View {
+struct FavouriteView: View {
     var body: some View {
         VStack(spacing: 16) {
             Text("Favourites")

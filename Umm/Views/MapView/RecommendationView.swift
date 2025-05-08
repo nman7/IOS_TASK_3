@@ -60,26 +60,26 @@ struct GooglePlace: Identifiable, Codable, Equatable {
 
     struct Photo: Codable, Equatable {
         let photo_reference: String
+        }
     }
-}
 
-struct GooglePlacesResponse: Codable {
-    let results: [GooglePlace]
-}
+    struct GooglePlacesResponse: Codable {
+        let results: [GooglePlace]
+    }
 
-struct CachedGooglePlacesResponse: Codable {
-    let results: [GooglePlace]
-}
+    struct CachedGooglePlacesResponse: Codable {
+        let results: [GooglePlace]
+    }
 
-struct GooglePlaceDetailsResponse: Codable {
-    let result: GooglePlaceDetails
-}
+    struct GooglePlaceDetailsResponse: Codable {
+        let result: GooglePlaceDetails
+    }
 
-struct GooglePlaceDetails: Codable {
-    let photos: [GooglePlace.Photo]?
-    let formatted_phone_number: String?
-    let international_phone_number: String?
-}
+    struct GooglePlaceDetails: Codable {
+        let photos: [GooglePlace.Photo]?
+        let formatted_phone_number: String?
+        let international_phone_number: String?
+    }
 
 
 struct RecommendationView: View {
@@ -193,8 +193,6 @@ struct RecommendationView: View {
         let location = "-33.88388762908775, 151.1992306199193" // Default: UTS, Sydney
         let radius = 5000
         let urlStr = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=\(query)&location=\(location)&radius=\(radius)&key=\(apiKey)"
-        
-        
         let cacheKey = "placesCache_\(urlStr)"
         if let cachedData = UserDefaults.standard.data(forKey: cacheKey),
            let cachedResult = try? JSONDecoder().decode(CachedGooglePlacesResponse.self, from: cachedData) {
@@ -285,6 +283,6 @@ struct RecommendationView: View {
     }
 }
 
-#Preview {
-    RecommendationView(searchKeyword: "Indian food")
-}
+//#Preview {
+//    RecommendationView(searchKeyword: "Indian food")
+//}

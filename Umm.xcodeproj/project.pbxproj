@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		56A7B3622DC89B1300AFBEA6 /* IOS_TASK_3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IOS_TASK_3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56A7B3622DC89B1300AFBEA6 /* Umm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Umm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		56A7B3642DC89B1300AFBEA6 /* IOS_TASK_3 */ = {
+		56A7B3642DC89B1300AFBEA6 /* Umm */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = IOS_TASK_3;
+			path = Umm;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +32,7 @@
 		56A7B3592DC89B1300AFBEA6 = {
 			isa = PBXGroup;
 			children = (
-				56A7B3642DC89B1300AFBEA6 /* IOS_TASK_3 */,
+				56A7B3642DC89B1300AFBEA6 /* Umm */,
 				56A7B3632DC89B1300AFBEA6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -40,7 +40,7 @@
 		56A7B3632DC89B1300AFBEA6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56A7B3622DC89B1300AFBEA6 /* IOS_TASK_3.app */,
+				56A7B3622DC89B1300AFBEA6 /* Umm.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56A7B3612DC89B1300AFBEA6 /* IOS_TASK_3 */ = {
+		56A7B3612DC89B1300AFBEA6 /* Umm */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56A7B3702DC89B1500AFBEA6 /* Build configuration list for PBXNativeTarget "IOS_TASK_3" */;
+			buildConfigurationList = 56A7B3702DC89B1500AFBEA6 /* Build configuration list for PBXNativeTarget "Umm" */;
 			buildPhases = (
 				56A7B35E2DC89B1300AFBEA6 /* Sources */,
 				56A7B35F2DC89B1300AFBEA6 /* Frameworks */,
@@ -61,13 +61,13 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				56A7B3642DC89B1300AFBEA6 /* IOS_TASK_3 */,
+				56A7B3642DC89B1300AFBEA6 /* Umm */,
 			);
-			name = IOS_TASK_3;
+			name = Umm;
 			packageProductDependencies = (
 			);
 			productName = IOS_TASK_3;
-			productReference = 56A7B3622DC89B1300AFBEA6 /* IOS_TASK_3.app */;
+			productReference = 56A7B3622DC89B1300AFBEA6 /* Umm.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -85,7 +85,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 56A7B35D2DC89B1300AFBEA6 /* Build configuration list for PBXProject "IOS_TASK_3" */;
+			buildConfigurationList = 56A7B35D2DC89B1300AFBEA6 /* Build configuration list for PBXProject "Umm" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				56A7B3612DC89B1300AFBEA6 /* IOS_TASK_3 */,
+				56A7B3612DC89B1300AFBEA6 /* Umm */,
 			);
 		};
 /* End PBXProject section */
@@ -251,7 +251,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"IOS_TASK_3/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Umm/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to show nearby results.";
@@ -281,7 +281,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"IOS_TASK_3/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Umm/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to show nearby results.";
@@ -307,7 +307,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56A7B35D2DC89B1300AFBEA6 /* Build configuration list for PBXProject "IOS_TASK_3" */ = {
+		56A7B35D2DC89B1300AFBEA6 /* Build configuration list for PBXProject "Umm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56A7B36E2DC89B1500AFBEA6 /* Debug */,
@@ -316,7 +316,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56A7B3702DC89B1500AFBEA6 /* Build configuration list for PBXNativeTarget "IOS_TASK_3" */ = {
+		56A7B3702DC89B1500AFBEA6 /* Build configuration list for PBXNativeTarget "Umm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56A7B3712DC89B1500AFBEA6 /* Debug */,

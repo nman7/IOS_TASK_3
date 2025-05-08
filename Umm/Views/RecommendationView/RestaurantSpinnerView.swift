@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct MealSpinnerView: View {
+struct RestaurantSpinnerView: View {
     @State private var selectedMeal: String?
     @State private var showResult = false
     @State private var navigateToRecommendation = false
@@ -19,7 +19,7 @@ struct MealSpinnerView: View {
                 VStack(spacing: 24) {
                     // Title & Subtitle
                     VStack(spacing: 6) {
-                        Text("Discover Your Meal")
+                        Text("Discover Your Restaurant")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(.primary)
 
@@ -43,7 +43,7 @@ struct MealSpinnerView: View {
                     .shadow(radius: 4)
 
                     // Roulette Spinner
-                    RouletteWheelView(categories: CategoryData.mealCategories) { result in
+                    RouletteWheelView(categories: CategoryTypeData.RestaurantCategories) { result in
                         selectedMeal = result
                         withAnimation {
                             showResult = true
@@ -87,7 +87,7 @@ struct MealSpinnerView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Meal Picker")
+            .navigationTitle("Restaurant Picker")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

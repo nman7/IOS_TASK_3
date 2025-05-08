@@ -17,7 +17,7 @@ struct MainMenuView: View {
 
                     // App Title and Subtitle
                     VStack(spacing: 6) {
-                        Text("Meal Roulette")
+                        Text("Restaurant Roulette")
                             .font(.system(size: 34, weight: .bold))
                             .foregroundColor(.primary)
 
@@ -38,10 +38,10 @@ struct MainMenuView: View {
                     VStack(spacing: 20) {
                         NavigationCardView(
                             icon: "fork.knife.circle.fill",
-                            title: "Find a Meal",
+                            title: "Find a Restaurant",
                             subtitle: "Spin and discover your next dish",
                             color: .blue,
-                            destination: MealSpinnerView()
+                            destination: RestaurantSpinnerView()
                         )
 
                         NavigationCardView(
@@ -57,7 +57,7 @@ struct MainMenuView: View {
                             title: "Your Favourites",
                             subtitle: "Quick access to saved picks",
                             color: .orange,
-                            destination: FavouritesView()
+                            destination: FavouriteView()
                         )
                     }
                     .padding(.horizontal)
