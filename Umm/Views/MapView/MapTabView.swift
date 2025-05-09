@@ -15,9 +15,10 @@ struct MapTabView: View {
     @Binding var selectedPlace: GooglePlace?
     let detailedPhotos: [GooglePlace.Photo]
     let photoURL: (String) -> URL?
-//    let fetchPlaceDetails: (GooglePlace) -> Void
+    //    let fetchPlaceDetails: (GooglePlace) -> Void
     let selectedPhoneNumber: String?
-
+    @EnvironmentObject var favouriteManager: FavouriteManager
+    
     var body: some View {
         // Combine places.filter and selectedPlace into sortedPlaces
         // let sortedPlaces = places.filter { $0.name != selectedPlace?.name } + (selectedPlace.map { [$0] } ?? [])
@@ -34,7 +35,7 @@ struct MapTabView: View {
                 }
             }
             .frame(height: 300)
-
+            
             VStack {
                 Button(action: {
                     region.span.latitudeDelta *= 0.8
@@ -45,7 +46,7 @@ struct MapTabView: View {
                         .background(Color.white.opacity(0.8))
                         .clipShape(Circle())
                 }
-
+                
                 Button(action: {
                     region.span.latitudeDelta *= 1.2
                     region.span.longitudeDelta *= 1.2
@@ -58,31 +59,35 @@ struct MapTabView: View {
             }
             .padding()
         }
-
+        
         Spacer()
-
+        
         if let place = selectedPlace {
             VStack(alignment: .leading, spacing: 4) {
-//                HStack {
-//                    Spacer()
-//                    Button(action: {
-//                        selectedPlace = nil
-//                    }) {
-//                        Image(systemName: "xmark.circle.fill")
-//                            .foregroundColor(.gray)
-//                    }
-//                }
-
+                HStack {
+                    Text(place.name)
+                        .font(.headline)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        toggleFavourite(place: place)
+                    }) {
+                        Image(systemName: favouriteManager.isFavourite(restaurantId: place.place_id) ? "heart.fill" : "heart")
+                            .foregroundColor(favouriteManager.isFavourite(restaurantId: place.place_id) ? .red : .gray)
+                    }
+                }
+                
                 let allPhotos = detailedPhotos.isEmpty ? (place.photos ?? []) : detailedPhotos
                 if !allPhotos.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(allPhotos.indices, id: \.self) { index in
                                 if let url = photoURL(allPhotos[index].photo_reference) {
-//                                    let _ = {
-//                                        print("photo URL: \(url)")
-//                                        return 0
-//                                    }()
+                                    //                                    let _ = {
+                                    //                                        print("photo URL: \(url)")
+                                    //                                        return 0
+                                    //                                    }()
                                     AsyncImage(url: url) { phase in
                                         switch phase {
                                         case .success(let image):
@@ -109,10 +114,10 @@ struct MapTabView: View {
                         }
                     }
                 }
-
+                
                 Text(place.name)
                     .font(.headline)
-
+                
                 Text(place.formatted_address)
                     .font(.subheadline)
                 
@@ -126,12 +131,12 @@ struct MapTabView: View {
                         .font(.caption)
                         .foregroundColor(openNow ? .green : .red)
                 }
-
+                
                 if !place.types.isEmpty {
                     Text("Type: \(place.types.joined(separator: ", "))")
                         .font(.caption)
                 }
-
+                
                 if let rating = place.rating {
                     Text("Rating: \(rating, specifier: "%.1f") ⭐️")
                         .font(.caption)
@@ -144,7 +149,7 @@ struct MapTabView: View {
             .padding()
         }
     }
-
+    
     @ViewBuilder
     private func mapMarker(for place: GooglePlace, isSelected: Bool) -> some View {
         ZStack {
@@ -167,7 +172,7 @@ struct MapTabView: View {
                                     longitude: place.geometry.location.lng
                                 )
                                 region.span = MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-//                                fetchPlaceDetails(place)
+                                //                                fetchPlaceDetails(place)
                             }
                     case .failure(_):
                         Circle()
@@ -189,13 +194,21 @@ struct MapTabView: View {
                             latitude: place.geometry.location.lat,
                             longitude: place.geometry.location.lng
                         )
-//                      fetchPlaceDetails(place)
+                        //                      fetchPlaceDetails(place)
                     }
             }
         }
     }
+    
+    private func toggleFavourite(place: GooglePlace) {
+        if favouriteManager.isFavourite(restaurantId: place.place_id) {
+            favouriteManager.removeFavourite(byId: place.place_id)
+        } else {
+            favouriteManager.addFavourite(place) // 直接傳入 GooglePlace 對象
+        }
+    }
 }
-
+    
 //#Preview {
 //    MapTabView()
 //}

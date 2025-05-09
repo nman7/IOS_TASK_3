@@ -57,7 +57,7 @@ struct MainMenuView: View {
                             title: "Your Favourites",
                             subtitle: "Quick access to saved picks",
                             color: .orange,
-                            destination: FavouriteView()
+                            destination: FavouritesView()
                         )
                     }
                     .padding(.horizontal)
