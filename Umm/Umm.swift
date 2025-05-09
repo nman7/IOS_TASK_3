@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct IOS_TASK_3App: App {
+struct Umm: App {
+    @StateObject private var favouriteManager = FavouriteManager()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(favouriteManager)
         }
     }
 }

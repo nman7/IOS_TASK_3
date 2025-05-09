@@ -38,6 +38,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
 struct GooglePlace: Identifiable, Codable, Equatable {
     let id = UUID()
+    let place_id: String
     let name: String
     let formatted_address: String
     let types: [String]
@@ -98,6 +99,7 @@ struct RecommendationView: View {
     )
     @StateObject private var locationManager = LocationManager()
     private let apiKey = "AIzaSyDL6ja_Bj23keyyWBuWwaTSn2nnUJwR800"
+    @StateObject private var favouriteManager = FavouriteManager()
 
     var body: some View {
         NavigationStack {
@@ -107,6 +109,8 @@ struct RecommendationView: View {
                         Text(tab).tag(tab)
                     }
                 }
+                .navigationTitle(searchKeyword)
+                .environmentObject(favouriteManager)
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
 

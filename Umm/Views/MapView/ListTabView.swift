@@ -14,9 +14,10 @@ struct ListTabView: View {
     @Binding var selectedPlace: GooglePlace?
     @Binding var region: MKCoordinateRegion
     let photoURL: (String) -> URL?
-//    let fetchPlaceDetails: (GooglePlace) -> Void
+    //    let fetchPlaceDetails: (GooglePlace) -> Void
     @Binding var selectedTab: String
-
+    @EnvironmentObject var favouriteManager: FavouriteManager
+    
     var body: some View {
         List(places.prefix(10)) { place in
             VStack(alignment: .leading, spacing: 8) {
@@ -40,32 +41,41 @@ struct ListTabView: View {
                     }
                 }
                 
-//                let _ = {
-//                    print("\(place.name): \(place)")
-//                    return 0
-//                }()
-
+                //                let _ = {
+                //                    print("\(place.name): \(place)")
+                //                    return 0
+                //                }()
+                
                 Text(place.name)
                     .font(.headline)
-
+                
                 Text(place.formatted_address)
                     .font(.subheadline)
-
+                
                 if let openNow = place.opening_hours?.open_now {
                     Text(openNow ? "Open now" : "Closed now")
                         .font(.caption)
                         .foregroundColor(openNow ? .green : .red)
                 }
-
+                
                 if !place.types.isEmpty {
                     Text("Type: \(place.types.joined(separator: ", "))")
                         .font(.caption)
                 }
-
+                
                 if let rating = place.rating {
                     Text("Rating: \(rating, specifier: "%.1f") ⭐️")
                         .font(.caption)
                 }
+            }
+            
+            Spacer()
+            
+            Button(action: {
+                toggleFavourite(place: place)
+            }) {
+                Image(systemName: favouriteManager.isFavourite(restaurantId: place.place_id) ? "heart.fill" : "heart")
+                    .foregroundColor(favouriteManager.isFavourite(restaurantId: place.place_id) ? .red : .gray)
             }
             .padding(.vertical, 8)
             .onTapGesture {
@@ -74,9 +84,17 @@ struct ListTabView: View {
                     latitude: place.geometry.location.lat,
                     longitude: place.geometry.location.lng
                 )
-//              fetchPlaceDetails(place)
+                //              fetchPlaceDetails(place)
                 selectedTab = "Map"
             }
+        }
+    }
+    
+    private func toggleFavourite(place: GooglePlace) {
+        if favouriteManager.isFavourite(restaurantId: place.place_id) {
+            favouriteManager.removeFavourite(byId: place.place_id)
+        } else {
+            favouriteManager.addFavourite(place) // 直接傳入 GooglePlace 對象
         }
     }
 }
