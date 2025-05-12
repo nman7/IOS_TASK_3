@@ -55,7 +55,7 @@ struct FavouritesView: View {
         ZStack {
             // Background
             LinearGradient(
-                colors: [Color.gray.opacity(0.2), Color.white],
+                colors: [Color.gray.opacity(0.1), Color.white],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
@@ -117,7 +117,8 @@ struct FavouriteRowView: View {
             // Info
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name)
-                    .font(.caption)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.black)
                     .lineLimit(1)
                 
                 Text(item.address)
