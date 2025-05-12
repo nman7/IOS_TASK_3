@@ -1,22 +1,39 @@
+//
+//  Created by nauman mansuri on 06/05/2025
+//  Designed by Kai-Hsuan Lin on 09/05/2025
+//
+
 import SwiftUI
+import AVFoundation
 
 struct RouletteWheelView: View {
-    let categories: [String]
+    let allCategories: [String] // From CategoryTypeData input data
     let onResult: (String) -> Void
-
+    
+    @State private var selectedCategories: [String] = [] // Randomly choose 20 options
     @State private var rotation: Double = 0
     @State private var isSpinning = false
-    let wheelSize: CGFloat = 350
+    @State private var player: AVAudioPlayer? // Sound
+    
+    // Wheel
+    var wheelSize: CGFloat = 350 // Size
+    let colors: [Color] = [
+        Color(hex: "#ff6600"), // Orange
+        Color(hex: "#5c5ce6"), // Purple
+        Color(hex: "#ff9900"), // Yellow
+        Color(hex: "#dae6c3"), // White
+        Color(hex: "#00661a"), // Green
+        Color(hex: "#f2ccff")  // Pink
+    ]
 
     var body: some View {
         ZStack {
-            // Fixed top needle
+            // Arrow
             VStack {
                 Image(systemName: "arrowtriangle.down.fill")
                     .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(.blue)
-                    .padding(.bottom, 6)
+                    .frame(width: 20, height: 30)
+                    .foregroundColor(Color(hex: "#ff6600"))
                 Spacer()
             }
 
@@ -24,16 +41,10 @@ struct RouletteWheelView: View {
             GeometryReader { geometry in
                 let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 
+                // Category segments with borders
                 ZStack {
-                    // Main wheel circle with light blue background
-                    Circle()
-                        .fill(Color.blue.opacity(0.15))
-                        .frame(width: wheelSize, height: wheelSize)
-                        .shadow(color: .gray.opacity(0.3), radius: 6, x: 0, y: 3)
-
-                    // Category segments with borders
-                    ForEach(categories.indices, id: \.self) { index in
-                        let segmentAngle = 360.0 / Double(categories.count)
+                    ForEach(selectedCategories.indices, id: \.self) { index in
+                        let segmentAngle = 360.0 / Double(selectedCategories.count)
                         let startAngle = Double(index) * segmentAngle
                         let endAngle = startAngle + segmentAngle
                         let midAngle = startAngle + segmentAngle / 2
@@ -51,12 +62,13 @@ struct RouletteWheelView: View {
                             )
                             path.closeSubpath()
                         }
-                        .stroke(Color.gray, lineWidth: 1)
+                        .fill(colors[index % colors.count].opacity(0.8))
 
                         // Category labels inside the slice
-                        Text(categories[index])
-                            .font(.caption2)
-                            .foregroundColor(.primary)
+                        Text(selectedCategories[index])
+                            .font(.system(size: 12, weight: .bold, design: .serif))
+                            .foregroundColor(Color(hex: "#000000"))
+                            .fixedSize(horizontal: true, vertical: false) // 防止文字被截斷
                             .rotationEffect(angle)
                             .position(
                                 x: center.x + (wheelSize / 3) * CGFloat(cos(angle.radians)),
@@ -64,34 +76,60 @@ struct RouletteWheelView: View {
                             )
                     }
 
-                    // Center SPIN Button, properly aligned
+                    // Center SPIN Button
                     Button(action: {
                         spinNeedle()
                     }) {
                         ZStack {
                             Circle()
-                                .fill(Color.blue)
-                                .frame(width: wheelSize / 3, height: wheelSize / 3) // Consistent size
-                            Text("Spin")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.white)
+                                .fill(Color(hex: "#000000"))
+                                .frame(width: wheelSize / 5, height: wheelSize / 5)
+                                .scaleEffect(isSpinning ? 0.8 : 1.0)
+                                .animation(.easeInOut(duration: 0.2), value: isSpinning)
+
+                            VStack {
+                                Text("SPIN")
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                    .foregroundColor(.white)
+                            }
                         }
                     }
-                    .position(center) // Ensuring the button is exactly at the center
                     .disabled(isSpinning)
                 }
-                .position(center) // Center the whole wheel
+                .position(center)
                 .rotationEffect(.degrees(rotation))
                 .animation(.easeOut(duration: 3), value: rotation)
             }
+            .padding(.bottom)
             .frame(width: wheelSize + 80, height: wheelSize + 100)
         }
+        .onAppear {
+            selectRandomCategories()
+        }
     }
-
+    
+    
+    // Randomly choose 20 options
+    private func selectRandomCategories() {
+        selectedCategories = Array(allCategories.shuffled().prefix(20))
+    }
+    
+    private func playSpinSound() {
+        if let soundURL = Bundle.main.url(forResource: "Spin", withExtension: "mp3") {
+            do {
+                player = try AVAudioPlayer(contentsOf: soundURL)
+                player?.play()
+            } catch {
+                print("Error playing sound: \(error)")
+            }
+        }
+    }
+    
     private func spinNeedle() {
         guard !isSpinning else { return }
         isSpinning = true
-
+        playSpinSound()
+        
         let fullSpins = Double.random(in: 3...6) * 360
         let extraAngle = Double.random(in: 0..<360)
         let totalRotation = fullSpins + extraAngle
@@ -100,11 +138,11 @@ struct RouletteWheelView: View {
             rotation += totalRotation
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             let finalNeedleAngle = rotation.truncatingRemainder(dividingBy: 360)
             let angleAtPin = (360 - finalNeedleAngle).truncatingRemainder(dividingBy: 360)
 
-            let result = closestCategory(to: angleAtPin, using: createAngleMap(for: categories))
+            let result = closestCategory(to: angleAtPin, using: createAngleMap(for: selectedCategories))
             onResult(result)
             isSpinning = false
         }
@@ -126,6 +164,6 @@ struct RouletteWheelView: View {
                 return category
             }
         }
-        return "Unknown"
+        return selectedCategories.randomElement() ?? "Unknown"
     }
 }

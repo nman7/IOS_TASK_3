@@ -1,108 +1,106 @@
+//
+//  Created by nauman mansuri on 06/05/2025
+//  Designed by Kai-Hsuan Lin on 09/05/2025
+//
+
 import SwiftUI
 
 struct MainMenuView: View {
     var body: some View {
         NavigationStack {
+            // Background Gradient
             ZStack {
-                // Background Gradient
                 LinearGradient(
-                    colors: [Color.blue.opacity(0.15), Color.white],
+                    colors: [Color.gray.opacity(0.2), Color.white],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 32) {
-                    Spacer()
-
-                    // App Title and Subtitle
-                    VStack(spacing: 6) {
-                        Text("Restaurant Roulette")
-                            .font(.system(size: 34, weight: .bold))
+                // Title & Image
+                VStack {
+                    VStack(spacing: 10) {
+                        Text("UUUMM🤔MMUUU")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
-
-                        Text("Let the wheel decide your cravings")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
                     }
 
-                    // Central Illustration
-                    Image(systemName: "takeoutbag.and.cup.and.straw.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 120, height: 120)
-                        .foregroundColor(.blue.opacity(0.5))
-                        .padding(.bottom, 12)
-
-                    // Navigation Cards
-                    VStack(spacing: 20) {
+                    Spacer()
+                    
+                    // Bottom Card Stack
+                    VStack(spacing: 10) {
                         NavigationCardView(
-                            icon: "fork.knife.circle.fill",
-                            title: "Find a Restaurant",
-                            subtitle: "Spin and discover your next dish",
-                            color: .blue,
+                            icon: "🍜",
+                            title: "What’s for Lunch ?",
+                            subtitle: "Spin to pick a restaurant",
                             destination: RestaurantSpinnerView()
                         )
 
                         NavigationCardView(
-                            icon: "cup.and.saucer.fill",
-                            title: "Pick a Drink",
-                            subtitle: "Choose something refreshing",
-                            color: .green,
+                            icon: "🥤",
+                            title: "Time for a Drink !",
+                            subtitle: "Take a refreshing",
                             destination: BeverageSpinnerView()
                         )
 
                         NavigationCardView(
-                            icon: "star.fill",
-                            title: "Your Favourites",
-                            subtitle: "Quick access to saved picks",
-                            color: .orange,
+                            icon: "⭐️",
+                            title: "Favourites ~",
+                            subtitle: "Your top picks",
                             destination: FavouritesView()
                         )
+                        
+                        NavigationCardView(
+                            icon: "🏷",
+                            title: "Coupons *",
+                            subtitle: "Every day discount",
+                            destination: CouponsView()
+                        )
                     }
-                    .padding(.horizontal)
-
-                    Spacer()
+                    .padding(.horizontal,30)
+                    .padding(.bottom, 5) // Push it further down
                 }
-                .padding()
             }
         }
     }
 }
 
+
 struct NavigationCardView<Destination: View>: View {
     let icon: String
     let title: String
     let subtitle: String
-    let color: Color
     let destination: Destination
 
     var body: some View {
         NavigationLink(destination: destination) {
-            HStack(spacing: 16) {
-                Image(systemName: icon)
-                    .font(.system(size: 34))
-                    .foregroundColor(.white)
+            HStack(spacing: 10) {
+                Text(icon)
+                    .font(.system(size: 40))
                     .padding()
-                    .background(color)
-                    .clipShape(Circle())
+                    .foregroundColor(.white)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
-                        .font(.headline)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.primary)
-
                     Text(subtitle)
-                        .font(.caption)
-                        .foregroundColor(.gray)
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundColor(Color(hex: "#999999"))
                 }
 
                 Spacer()
+                
             }
             .padding()
+            .frame(height: 90)
             .background(Color(.systemBackground))
-            .cornerRadius(14)
-            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+            .cornerRadius(30)
+            .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 0)
         }
     }
+}
+
+#Preview {
+    MainMenuView()
 }
