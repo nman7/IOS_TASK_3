@@ -15,7 +15,7 @@ struct RestaurantSpinnerView: View {
             ZStack {
                 // Background
                 LinearGradient(
-                    colors: [Color.gray.opacity(0.2), Color.white],
+                    colors: [Color.gray.opacity(0.1), Color.white],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )

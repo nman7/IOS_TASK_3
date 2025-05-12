@@ -11,7 +11,7 @@ struct MainMenuView: View {
             // Background Gradient
             ZStack {
                 LinearGradient(
-                    colors: [Color.gray.opacity(0.2), Color.white],
+                    colors: [Color.gray.opacity(0.1), Color.white],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -25,6 +25,17 @@ struct MainMenuView: View {
                             .foregroundColor(.primary)
                     }
 
+                    Spacer()
+                    
+                  VStack {
+                        Text("👉👉👉👉👉🎯")
+                          .font(.system(size: 40))
+                        Text("🍔🍟🌮🍜🍦🍮")
+                            .font(.system(size: 40))
+                        Text("☕️🥤🧋🍺🍸🍹")
+                          .font(.system(size: 40))
+                    }
+                    
                     Spacer()
                     
                     // Bottom Card Stack
