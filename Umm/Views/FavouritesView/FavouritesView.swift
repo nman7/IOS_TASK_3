@@ -15,7 +15,7 @@ struct FavouritesView: View {
     private let apiKey = "AIzaSyDL6ja_Bj23keyyWBuWwaTSn2nnUJwR800"
     
     private let photoURL: (String) -> URL? = { reference in
-        URL(string: "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=\(reference)&key=YOUR_API_KEY")
+        URL(string: "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=\(reference)&key=AIzaSyDL6ja_Bj23keyyWBuWwaTSn2nnUJwR800")
     }
     
     var body: some View {
@@ -72,6 +72,9 @@ struct FavouritesView: View {
                             MapDetailView(item: item)
                         } label: {
                             FavouriteRowView(item: item, photoURL: photoURL)
+                                .onTapGesture {
+                                            print("12")
+                                        }
                         }
                     }
                     .onDelete { indexSet in
@@ -170,6 +173,8 @@ private struct MapDetailView: View {
                         latitude: place.geometry.location.lat,
                         longitude: place.geometry.location.lng
                     )) {
+                        Text("\(place.name)")
+                        Text("!@##ADFAD")
                         Image(systemName: "mappin.circle.fill")
                             .font(.title)
                             .foregroundColor(.red)

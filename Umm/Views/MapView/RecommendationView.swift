@@ -124,7 +124,8 @@ struct GooglePlace: Identifiable, Codable, Equatable {
                             detailedPhotos: detailedPhotos,
                             photoURL: photoURL,
                             //  fetchPlaceDetails: fetchPlaceDetails,
-                            selectedPhoneNumber: selectedPhoneNumber
+                            selectedPhoneNumber: selectedPhoneNumber,
+                            userLocation: locationManager.region?.center
                         )
                     } else {
                         ListTabView(

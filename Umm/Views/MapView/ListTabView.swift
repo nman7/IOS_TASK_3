@@ -20,7 +20,7 @@ struct ListTabView: View {
     @EnvironmentObject var favouriteManager: FavouriteManager
     
     var body: some View {
-        List(places.prefix(10)) { place in
+        List(places) { place in
             RestaurantCardView(
                 place: place,
                 isFavourite: favouriteManager.isFavourite(restaurantId: place.place_id),

@@ -18,6 +18,7 @@ struct MapTabView: View {
     let detailedPhotos: [GooglePlace.Photo]
     let photoURL: (String) -> URL?
     let selectedPhoneNumber: String?
+    let userLocation: CLLocationCoordinate2D?
     
     @EnvironmentObject var favouriteManager: FavouriteManager
     
@@ -27,7 +28,7 @@ struct MapTabView: View {
                 
                 // Map Section
                 ZStack(alignment: .topTrailing) {
-                    Map(coordinateRegion: $region, interactionModes: [.all], annotationItems: places) { place in
+                    Map(coordinateRegion: $region, interactionModes: [.all], showsUserLocation: true, annotationItems: places) { place in
                         MapAnnotation(
                             coordinate: CLLocationCoordinate2D(
                                 latitude: place.geometry.location.lat,
@@ -51,6 +52,20 @@ struct MapTabView: View {
                     VStack(spacing: 10) {
                         zoomButton(icon: "plus.magnifyingglass", action: zoomIn)
                         zoomButton(icon: "minus.magnifyingglass", action: zoomOut)
+                        Button(action: {
+                            if let location = userLocation {
+                                withAnimation {
+                                    region.center = location
+                                }
+                            }
+                        }) {
+                            Image(systemName: "scope")
+                                .font(.body)
+                                .frame(width: 40, height: 40)
+                                .background(Color.white.opacity(0.6))
+                                .clipShape(Circle())
+                                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 4)
+                        }
                     }
                     .padding(.trailing, 10)
                     .padding(.top, 10)
