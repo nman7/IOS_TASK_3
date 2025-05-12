@@ -1,3 +1,8 @@
+//
+//  Created by nauman mansuri on 06/05/2025
+//  Designed by Kai-Hsuan Lin on 09/05/2025
+//
+
 import SwiftUI
 
 struct RestaurantSpinnerView: View {
@@ -10,72 +15,69 @@ struct RestaurantSpinnerView: View {
             ZStack {
                 // Background
                 LinearGradient(
-                    colors: [Color(red: 0.85, green: 0.93, blue: 1.0), Color.white],
+                    colors: [Color.gray.opacity(0.1), Color.white],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 24) {
+                VStack(spacing: 10) {
                     // Title & Subtitle
                     VStack(spacing: 6) {
-                        Text("Discover Your Restaurant")
-                            .font(.system(size: 28, weight: .bold))
+                        Text("What’s for Lunch?")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
 
-                        Text("Spin the wheel and let it decide for you")
-                            .font(.subheadline)
+                        Text("Give it a spin and let fate choose your feast!")
+                            .font(.caption)
                             .foregroundColor(.gray)
                     }
 
                     // Food Icon
                     ZStack {
-                        Circle()
-                            .fill(Color.blue.opacity(0.9))
-                            .frame(width: 100, height: 100)
-
-                        Image(systemName: "fork.knife.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.white)
+                        Text("🍜")
+                            .font(.system(size: 40))
                     }
-                    .shadow(radius: 4)
 
                     // Roulette Spinner
-                    RouletteWheelView(categories: CategoryTypeData.RestaurantCategories) { result in
+                    RouletteWheelView(allCategories: CategoryTypeData.RestaurantCategories) { result in
                         selectedMeal = result
                         withAnimation {
                             showResult = true
                         }
                     }
 
-                    // Instruction
-                    Text("Tap the wheel to spin")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-
                     // Result View
                     if showResult, let meal = selectedMeal {
-                        VStack(spacing: 14) {
-                            Text("You got: \(meal)")
-                                .font(.title3)
+                        VStack(spacing: 10) {
+                            Text("You got")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            Text("\(meal)")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .fontWeight(.semibold)
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color(hex: "#ff6600"))
 
                             Button("View Result") {
                                 navigateToRecommendation = true
                             }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundColor(.green)
-                            .cornerRadius(10)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .foregroundColor(.white)
+                            .background(Color(hex: "#ff6600"))
+                            .cornerRadius(25)
                         }
                         .padding(.top)
                         .animation(.easeInOut, value: showResult)
                     }
 
+                    // Instruction
+                    Text("Tap the wheel to spin")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
                     // Navigation to RecommendationView
                     NavigationLink(
                         destination: RecommendationView(searchKeyword: selectedMeal ?? ""),
@@ -83,12 +85,14 @@ struct RestaurantSpinnerView: View {
                     ) {
                         EmptyView()
                     }
-                    .hidden()
+                    .padding(.horizontal)
                 }
-                .padding()
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle("Restaurant Picker")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
+
+//#Preview {
+//    RestaurantSpinnerView()
+//}
