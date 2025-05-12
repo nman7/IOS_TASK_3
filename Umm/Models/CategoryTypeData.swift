@@ -1,9 +1,18 @@
+//
+//  FavouriteData.swift
+//  Umm
+//
+//  Created by Kai-Hsuan Lin on 07/05/2025
+//
+
 import Foundation
 
+// Restaurant: 50
 struct CategoryTypeData {
     static let RestaurantCategories = [
         "African",
         "American",
+        "Ausian",
         "Australian",
         "BBQ",
         "Bengali",
@@ -13,13 +22,13 @@ struct CategoryTypeData {
         "Café",
         "Chinese",
         "Continental",
+        "Dessert",
         "Dim Sum",
         "European",
         "Fast Food",
         "Fine Dining",
         "French",
         "Fusion",
-        "Gujarati",
         "Healthy",
         "Hot Pot",
         "Indian",
@@ -35,7 +44,6 @@ struct CategoryTypeData {
         "North Indian",
         "Omakas",
         "Punjabi",
-        "Rajasthani",
         "Ramen",
         "Seafood",
         "Singaporean",
@@ -54,6 +62,7 @@ struct CategoryTypeData {
         "Vietnamese",
     ]
 
+    // NonAlcoholic: 25
     static let BeverageCategoriesNonAlcoholic = [
         "Bubble Tea",
         "Buttermilk",
@@ -77,26 +86,37 @@ struct CategoryTypeData {
         "Sports Drinks",
         "Sparkling Water",
         "Tea",
-        "Yogurt Drinks"
+        "Tonic Water",
+        "Water",
+        "Yogurt Drinks",
     ]
     
+    // Alcoholic: 25
     static let BeverageCategoriesAlcoholic = [
         "Beer",
         "Brandy",
         "Champagne",
         "Cocktail",
         "Craft Beer",
+        "Espresso Martini",
         "Gin",
         "Hard Cider",
+        "Margarita",
+        "Martini",
+        "Mojito",
+        "Negroni",
+        "Old Fashioned",
         "Red Wine",
         "Rosé Wine",
         "Rum",
         "Sake",
         "Soju",
+        "Sparkling Wine",
         "Tequila",
         "Vodka",
         "Wine",
         "White Wine",
-        "Whiskey"
+        "Whiskey",
+        "Whiskey Sour"
     ]
 }

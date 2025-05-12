@@ -13,6 +13,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var region: MKCoordinateRegion?
     @Published var hasUpdatedRegion = false
+    @EnvironmentObject var favouriteManager: FavouriteManager
 
     override init() {
         super.init()
@@ -35,6 +36,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 }
+
 
 struct GooglePlace: Identifiable, Codable, Equatable {
     let id = UUID()
@@ -82,119 +84,107 @@ struct GooglePlace: Identifiable, Codable, Equatable {
         let international_phone_number: String?
     }
 
+    struct RecommendationView: View {
+        let searchKeyword: String
+        @State private var searchText = ""
+        @State private var places: [GooglePlace] = []
+        // Tab state for List/Map toggle
+        @State private var selectedTab = "List"
+        private let tabs = ["List", "Map"]
+        @State private var selectedPlace: GooglePlace? = nil
+        @State private var detailedPhotos: [GooglePlace.Photo] = []
+        @State private var selectedPhoneNumber: String? = nil
+        @State private var region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0),
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        )
+        @StateObject private var locationManager = LocationManager()
+        private let apiKey = "AIzaSyDL6ja_Bj23keyyWBuWwaTSn2nnUJwR800"
+        
+        @StateObject private var favouriteManager = FavouriteManager()
 
-struct RecommendationView: View {
-    let searchKeyword: String
-    @State private var searchText = ""
-    @State private var places: [GooglePlace] = []
-    // Tab state for List/Map toggle
-    @State private var selectedTab = "List"
-    private let tabs = ["List", "Map"]
-    @State private var selectedPlace: GooglePlace? = nil
-    @State private var detailedPhotos: [GooglePlace.Photo] = []
-    @State private var selectedPhoneNumber: String? = nil
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0),
-        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-    )
-    @StateObject private var locationManager = LocationManager()
-    private let apiKey = "AIzaSyDL6ja_Bj23keyyWBuWwaTSn2nnUJwR800"
-    @StateObject private var favouriteManager = FavouriteManager()
+        var body: some View {
+            NavigationStack {
+                VStack {
+                    Picker("View Mode", selection: $selectedTab) {
+                        ForEach(tabs, id: \.self) { tab in
+                            Text(tab).tag(tab)
+                        }
+                    }
+                    .navigationTitle(searchKeyword)
+                    .environmentObject(favouriteManager)
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
 
-    var body: some View {
-        NavigationStack {
-            VStack {
-                Picker("View Mode", selection: $selectedTab) {
-                    ForEach(tabs, id: \.self) { tab in
-                        Text(tab).tag(tab)
+                    if selectedTab == "Map" {
+                        MapTabView(
+                            region: $region,
+                            places: places,
+                            selectedPlace: $selectedPlace,
+                            detailedPhotos: detailedPhotos,
+                            photoURL: photoURL,
+                            //  fetchPlaceDetails: fetchPlaceDetails,
+                            selectedPhoneNumber: selectedPhoneNumber
+                        )
+                    } else {
+                        ListTabView(
+                            places: places,
+                            selectedPlace: $selectedPlace,
+                            region: $region,
+                            photoURL: photoURL,
+                            //  fetchPlaceDetails: fetchPlaceDetails,
+                            selectedTab: $selectedTab
+                        )
                     }
                 }
                 .navigationTitle(searchKeyword)
-                .environmentObject(favouriteManager)
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                .onAppear {
+                    let status = CLLocationManager().authorizationStatus
+                    if status == .authorizedWhenInUse || status == .authorizedAlways {
+                        if let newRegion = locationManager.region {
+                            self.region = newRegion
+                            searchPlaces()
+                        }
+                    }
 
-                if selectedTab == "Map" {
-//                    let _ = {
-//                        print("selectedPlace: \(selectedPlace)")
-//                        return 0
-//                    }()
-                    
-                    MapTabView(
-                        region: $region,
-                        places: places,
-                        selectedPlace: $selectedPlace,
-                        detailedPhotos: detailedPhotos,
-                        photoURL: photoURL,
-//                        fetchPlaceDetails: fetchPlaceDetails,
-                        selectedPhoneNumber: selectedPhoneNumber
-                    )
-                } else {
-                    ListTabView(
-                        places: places,
-                        selectedPlace: $selectedPlace,
-                        region: $region,
-                        photoURL: photoURL,
-//                        fetchPlaceDetails: fetchPlaceDetails,
-                        selectedTab: $selectedTab
-                    )
                 }
-            }
-            .navigationTitle(searchKeyword)
-            .onAppear {
-                let status = CLLocationManager().authorizationStatus
-                if status == .authorizedWhenInUse || status == .authorizedAlways {
-                    if let newRegion = locationManager.region {
-                        self.region = newRegion
+                .onChange(of: selectedTab) { (oldTab, newTab) in
+                    if (newTab == "Map") {
+                        if (selectedPlace == nil) {
+                            selectedPlace = places.first
+                        }
+                    } else {
+                        selectedPlace = nil
+                    }
+                }
+                .onChange(of: selectedPlace) { (oldPlace, newPlace) in
+                    if let place = newPlace {
+                        region.center = CLLocationCoordinate2D(
+                            latitude: place.geometry.location.lat,
+                            longitude: place.geometry.location.lng
+                        )
+                        fetchPlaceDetails(for: place)
+                    }
+                }
+                .onChange(of: locationManager.hasUpdatedRegion) { (before, updated) in
+                    let status = CLLocationManager().authorizationStatus
+                    if updated && (status == .authorizedWhenInUse || status == .authorizedAlways) {
+                        if let newRegion = locationManager.region {
+                            self.region = newRegion
+                            self.searchText = self.searchKeyword
+                            searchPlaces()
+                        }
+                    } else {
                         searchPlaces()
                     }
-                }
-//                else if status == .denied || status == .restricted {
-//                    // fallback to UTS Sydney
-//                    self.region = MKCoordinateRegion(
-//                        center: CLLocationCoordinate2D(latitude: -33.88388762908775, longitude: 151.1992306199193),
-//                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-//                    )
-//                    self.searchText = self.searchKeyword
-//                    searchPlaces()
-//                }
-            }
-            .onChange(of: selectedTab) { (oldTab, newTab) in
-                if (newTab == "Map") {
-                    if (selectedPlace == nil) {
-                        selectedPlace = places.first
-                    }
-                } else {
-                    selectedPlace = nil
-                }
-            }
-            .onChange(of: selectedPlace) { (oldPlace, newPlace) in
-                if let place = newPlace {
-                    region.center = CLLocationCoordinate2D(
-                        latitude: place.geometry.location.lat,
-                        longitude: place.geometry.location.lng
-                    )
-                    fetchPlaceDetails(for: place)
-                }
-            }
-            .onChange(of: locationManager.hasUpdatedRegion) { (before, updated) in
-                let status = CLLocationManager().authorizationStatus
-                if updated && (status == .authorizedWhenInUse || status == .authorizedAlways) {
-                    if let newRegion = locationManager.region {
-                        self.region = newRegion
-                        self.searchText = self.searchKeyword
-                        searchPlaces()
-                    }
-                } else {
-                    searchPlaces()
                 }
             }
         }
-    }
 
     func searchPlaces() {
-        let query = searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let location = "-33.88388762908775, 151.1992306199193" // Default: UTS, Sydney
+        let query = searchText.isEmpty ? searchKeyword : searchText
+        let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let location = "-33.883888, 151.199231" // Default: UTS, Sydney
         let radius = 5000
         let urlStr = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=\(query)&location=\(location)&radius=\(radius)&key=\(apiKey)"
         let cacheKey = "placesCache_\(urlStr)"
@@ -288,5 +278,5 @@ struct RecommendationView: View {
 }
 
 //#Preview {
-//    RecommendationView(searchKeyword: "Indian food")
+//    RecommendationView(searchKeyword: "Korean")
 //}

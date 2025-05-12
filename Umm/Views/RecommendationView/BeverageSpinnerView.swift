@@ -1,62 +1,97 @@
+//
+//  Created by nauman mansuri on 06/05/2025
+//  Designed by Kai-Hsuan Lin on 09/05/2025
+//
+
 import SwiftUI
 
 struct BeverageSpinnerView: View {
-    @State private var allowAlcohol = false
     @State private var selectedDrink: String?
     @State private var showResult = false
     @State private var navigateToRecommendation = false
+    @State private var allowAlcohol = false
+    
+    @State private var isAlcoholic = false
+    @State private var key = UUID() // Recreate Roulette
 
     var body: some View {
         NavigationStack {
             ZStack {
                 // Background
                 LinearGradient(
-                    colors: [Color.blue.opacity(0.15), Color.white],
+                    colors: [Color.gray.opacity(0.2), Color.white],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 28) {
+                VStack(spacing: 10) {
                     // Title and subtitle
                     VStack(spacing: 6) {
-                        Text("Discover Your Drink")
-                            .font(.system(size: 28, weight: .bold))
+                        Text("Time for a Drink")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
 
-                        Text("Let the wheel suggest your next beverage")
-                            .font(.subheadline)
+                        Text("Feeling thirsty? Let’s sip on something yummy!")
+                            .font(.caption)
                             .foregroundColor(.gray)
                     }
 
-                    // Icon in circle background
-                    ZStack {
-                        Circle()
-                            .fill(Color.green.opacity(0.9))
-                            .frame(width: 100, height: 100)
-
-                        Image(systemName: "cup.and.saucer.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 60, height: 60)
-                            .foregroundColor(.white)
+                    // Drink Icon
+                    HStack {
+                        Text("🥤")
+                            .font(.system(size: 40))
+                            .frame(width: 237.5, alignment: .trailing)
+                        // Toggle
+                        Toggle("Alcoholic Switch", isOn: $isAlcoholic)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                            .onChange(of: isAlcoholic) { _ in
+                                key = UUID() // 強制重新創建視圖
+                            }
+                        Spacer(minLength: 25)
                     }
-                    .shadow(radius: 4)
 
-                    // Toggle
-                    Toggle("Include Alcoholic Drinks", isOn: $allowAlcohol)
-                        .padding(.horizontal)
+                    // Roulette Spinner
+                        RouletteWheelView(
+                            allCategories: isAlcoholic ?
+                                CategoryTypeData.BeverageCategoriesAlcoholic :
+                                CategoryTypeData.BeverageCategoriesNonAlcoholic,
+                            onResult: { result in
+                                selectedDrink = result
+                                withAnimation {
+                                    showResult = true
+                                }
+                            }
+                        )
+                        .id(key) // / 強制重新創建視圖
 
-                    // Wheel
-                    let drinks = allowAlcohol
-                        ? CategoryTypeData.BeverageCategoriesAlcoholic + CategoryTypeData.BeverageCategoriesNonAlcoholic
-                        : CategoryTypeData.BeverageCategoriesNonAlcoholic
+                    // Result View
+                    if showResult, let drink = selectedDrink {
+                        VStack(spacing: 10) {
+                            Text("You got")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            
+                            Text("\(drink)")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .fontWeight(.semibold)
+                                .foregroundColor(Color(hex: "#ff6600"))
 
-                    RouletteWheelView(categories: drinks) { result in
-                        selectedDrink = result
-                        withAnimation {
-                            showResult = true
+
+                            Button("View Result") {
+                                navigateToRecommendation = true
+                            }
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .foregroundColor(.white)
+                            .background(Color(hex: "#ff6600"))
+                            .cornerRadius(25)
                         }
+                        .padding(.top)
+                        .animation(.easeInOut, value: showResult)
                     }
 
                     // Instruction
@@ -64,42 +99,21 @@ struct BeverageSpinnerView: View {
                         .font(.caption)
                         .foregroundColor(.gray)
 
-                    // Result
-                    if showResult, let drink = selectedDrink {
-                        VStack(spacing: 12) {
-                            Text("You got: \(drink)")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.blue)
-
-                            Button("View Result") {
-                                navigateToRecommendation = true
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundColor(.green)
-                            .cornerRadius(10)
-                        }
-                        .padding(.top)
-                        .animation(.easeInOut, value: showResult)
-                    }
-
-                    Spacer(minLength: 20)
-
-                    // Navigation link to RecommendationView
+                    // Navigation to RecommendationView
                     NavigationLink(
                         destination: RecommendationView(searchKeyword: selectedDrink ?? ""),
                         isActive: $navigateToRecommendation
                     ) {
                         EmptyView()
                     }
-                    .hidden()
+                    .padding(.horizontal)
                 }
-                .padding()
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle("Beverage Picker")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }
+
+//#Preview {
+//    BeverageSpinnerView()
+//}
