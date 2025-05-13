@@ -46,14 +46,14 @@ struct MainMenuView: View {
                             subtitle: "Spin to pick a restaurant",
                             destination: RestaurantSpinnerView()
                         )
-
+                        
                         NavigationCardView(
                             icon: "🥤",
                             title: "Time for a Drink !",
                             subtitle: "Take a refreshing",
                             destination: BeverageSpinnerView()
                         )
-
+                        
                         NavigationCardView(
                             icon: "⭐️",
                             title: "Favourites ~",
@@ -65,7 +65,13 @@ struct MainMenuView: View {
                             icon: "🏷",
                             title: "Coupons *",
                             subtitle: "Every day discount",
-                            destination: CouponsView()
+                            destination: CouponsView(coupons: [
+                                Coupon(id: UUID(), title: "Welcome Offer 15%", discountPercent: 15, minOrderValue: 20.0, expiry: Date().addingTimeInterval(365 * 86400), code: "WELCOME15"),
+                                Coupon(id: UUID(), title: "10% Off Lunch", discountPercent: 10, minOrderValue: 15.0, expiry: Date().addingTimeInterval(7 * 86400), code: "LUNCH10"),
+                                Coupon(id: UUID(), title: "Buy 1 Get 1 Free", discountPercent: 50, minOrderValue: 25.0, expiry: Date().addingTimeInterval(7 * 86400), code: "BUY1GET1"),
+                                Coupon(id: UUID(), title: "Summer Sale 10%", discountPercent: 10, minOrderValue: 20.0, expiry: Date().addingTimeInterval(30 * 86400), code: "SUMMER10"),
+                                Coupon(id: UUID(), title: "Birthday Gift 30%", discountPercent: 30, minOrderValue: 25.0, expiry: Date().addingTimeInterval(30 * 86400), code: "BIRTHDAY30")
+                            ])
                         )
                     }
                     .padding(.horizontal,30)
@@ -111,6 +117,7 @@ struct NavigationCardView<Destination: View>: View {
         }
     }
 }
+
 
 #Preview {
     MainMenuView()
