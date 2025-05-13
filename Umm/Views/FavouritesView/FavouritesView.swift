@@ -27,18 +27,18 @@ struct FavouritesView: View {
                     favouritesListView
                 }
             }
-            .navigationTitle("Favourites")
+            .navigationTitle("Favourites~")
         }
     }
     
     private var emptyStateView: some View {
         VStack(spacing: 15) {
-            Image(systemName: "heart")
+            Image(systemName: "Heart")
                 .font(.system(size: 50))
                 .foregroundColor(.gray)
             
             VStack(spacing: 10) {
-                Text("No Favourites list")
+                Text("No favourites list")
                     .font(.headline)
                     .foregroundColor(.gray)
                 
@@ -104,13 +104,13 @@ struct FavouriteRowView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .frame(width: 65, height: 80)
+                            .frame(width: 70, height: 70)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                     } else if phase.error != nil {
                         placeholderImage
                     } else {
                         ProgressView()
-                            .frame(width: 65, height: 80)
+                            .frame(width: 70, height: 70)
                     }
                 }
             } else {
@@ -141,7 +141,7 @@ struct FavouriteRowView: View {
     private var placeholderImage: some View {
         ZStack {
             Color(.systemGray6)
-                .frame(width: 65, height: 80)
+                .frame(width: 70, height: 70)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             Image(systemName: "photo")
                 .foregroundColor(.gray)
