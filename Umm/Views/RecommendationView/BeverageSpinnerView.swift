@@ -28,7 +28,7 @@ struct BeverageSpinnerView: View {
                 VStack(spacing: 10) {
                     // Title and subtitle
                     VStack(spacing: 6) {
-                        Text("Time for a Drink")
+                        Text("Time for a Drink!")
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.primary)
 
