@@ -55,7 +55,9 @@
      - Place Details
      - Place Photos enabled
 
-4. Run on a real iOS device or iOS simulator (iPhone 16 Pro 18.2 recommended) (location services recommended).
+4. Run on a real iOS device or iOS simulator.
+     - (iPhone 16 Pro 18.2 recommended)
+     - (location services recommended)
 
 ---
 
